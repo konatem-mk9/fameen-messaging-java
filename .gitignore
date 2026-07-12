@@ -1,0 +1,20 @@
+# Build Maven
+target/
+
+# Build sans Maven (script build-and-test.ps1)
+out/
+
+# Jars telecharges par build-and-test.ps1
+lib/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# Divers
+*.class
+*.log

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- Namespace Maven Central vérifié via GitHub (io.github.konatem-mk9).
+       Le package Java reste com.fameen.messaging — Central ne contraint que le groupId. -->
+  <groupId>io.github.konatem-mk9</groupId>
+  <artifactId>fameen-messaging</artifactId>
+  <version>0.1.0</version>
+  <packaging>jar</packaging>
+
+  <name>Fameen Messaging SDK</name>
+  <description>SDK Java officiel de l'API Fameen Messaging (SMS, WhatsApp, Email).</description>
+  <url>https://business.fameengroupe.com</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>Fameen Groupe</name>
+    <url>https://business.fameengroupe.com</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <id>konatem-mk9</id>
+      <name>Moussa KONATE</name>
+      <email>konatem.mk9@gmail.com</email>
+      <organization>Fameen Groupe</organization>
+      <organizationUrl>https://business.fameengroupe.com</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/konatem-mk9/fameen-messaging.git</connection>
+    <developerConnection>scm:git:git@github.com:konatem-mk9/fameen-messaging.git</developerConnection>
+    <url>https://github.com/konatem-mk9/fameen-messaging</url>
+  </scm>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.release>17</maven.compiler.release>
+    <jackson.version>2.17.2</jackson.version>
+    <junit.version>5.10.2</junit.version>
+  </properties>
+
+  <dependencies>
+    <!-- Sérialisation JSON (tire jackson-core et jackson-annotations). -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
+    <!-- Tests -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <release>17</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.1</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
