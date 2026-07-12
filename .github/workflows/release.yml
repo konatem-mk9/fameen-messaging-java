@@ -1,0 +1,36 @@
+# A chaque tag `vX.Y.Z` : tests JUnit + jars (binaire, sources, javadoc) via Maven,
+# puis Release GitHub avec les jars attaches.
+# NB : la publication Maven Central reste faite via package-central.ps1 (bundle signe GPG) ;
+# elle pourra etre automatisee ici plus tard avec un token central.sonatype.com + la cle GPG
+# en secrets GitHub (central-publishing-maven-plugin).
+name: Tests & release GitHub
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Tests + jars (bin, sources, javadoc)
+        run: mvn -B verify
+
+      - name: Release GitHub avec les jars
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/fameen-messaging-*.jar
+          generate_release_notes: true
