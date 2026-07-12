@@ -40,9 +40,9 @@
   </developers>
 
   <scm>
-    <connection>scm:git:https://github.com/konatem-mk9/fameen-messaging.git</connection>
-    <developerConnection>scm:git:git@github.com:konatem-mk9/fameen-messaging.git</developerConnection>
-    <url>https://github.com/konatem-mk9/fameen-messaging</url>
+    <connection>scm:git:https://github.com/konatem-mk9/fameen-messaging-java.git</connection>
+    <developerConnection>scm:git:git@github.com:konatem-mk9/fameen-messaging-java.git</developerConnection>
+    <url>https://github.com/konatem-mk9/fameen-messaging-java</url>
   </scm>
 
   <properties>
