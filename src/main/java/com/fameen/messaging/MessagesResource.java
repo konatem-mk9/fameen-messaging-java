@@ -23,10 +23,10 @@ public final class MessagesResource {
      */
     public MessageResource create(CreateMessageParams params) {
         Objects.requireNonNull(params, "params");
-        Validation.assertSendable(params.to(), params.message(), params.channel());
+        Validation.assertSendable(params.to(), params.message(), params.channel(), !params.attachments().isEmpty());
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("to", params.to());
-        body.put("message", params.message());
+        body.put("message", params.message() != null ? params.message() : "");
         if (params.channel() != null) {
             body.put("channel", params.channel().value());
         }
@@ -36,6 +36,7 @@ public final class MessagesResource {
         if (params.statusCallback() != null && !params.statusCallback().isBlank()) {
             body.put("statusCallback", params.statusCallback());
         }
+        FameenMessaging.putAttachments(body, params.attachments());
         return client.request("POST", "/messages", null, body, params.idempotencyKey(), MessageResource.class);
     }
 

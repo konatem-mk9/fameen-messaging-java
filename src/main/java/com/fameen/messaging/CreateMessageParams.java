@@ -1,5 +1,9 @@
 package com.fameen.messaging;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Paramètres de l'envoi unifié ({@code POST /messages}).
  *
@@ -15,6 +19,7 @@ public final class CreateMessageParams {
     private final String subject;
     private final String statusCallback;
     private final String idempotencyKey;
+    private final List<Attachment> attachments;
 
     private CreateMessageParams(Builder builder) {
         this.to = builder.to;
@@ -23,6 +28,7 @@ public final class CreateMessageParams {
         this.subject = builder.subject;
         this.statusCallback = builder.statusCallback;
         this.idempotencyKey = builder.idempotencyKey;
+        this.attachments = Collections.unmodifiableList(new ArrayList<>(builder.attachments));
     }
 
     public static Builder builder() {
@@ -59,6 +65,15 @@ public final class CreateMessageParams {
         return idempotencyKey;
     }
 
+    /**
+     * Pièces jointes (PDF, images, vidéo, audio). WhatsApp : un seul média par
+     * message ; Email : plusieurs autorisées ; non supporté en SMS. Quand un
+     * média est présent, {@code message} peut être vide.
+     */
+    public List<Attachment> attachments() {
+        return attachments;
+    }
+
     /** Constructeur fluide de {@link CreateMessageParams}. */
     public static final class Builder {
 
@@ -68,6 +83,7 @@ public final class CreateMessageParams {
         private String subject;
         private String statusCallback;
         private String idempotencyKey;
+        private final List<Attachment> attachments = new ArrayList<>();
 
         private Builder() {
         }
@@ -105,6 +121,27 @@ public final class CreateMessageParams {
         /** Clé d'idempotence (fenêtre de 24 h côté serveur). */
         public Builder idempotencyKey(String idempotencyKey) {
             this.idempotencyKey = idempotencyKey;
+            return this;
+        }
+
+        /** Ajoute une pièce jointe (voir {@link Attachment#fromFile(java.nio.file.Path)}). */
+        public Builder addAttachment(Attachment attachment) {
+            if (attachment != null) {
+                this.attachments.add(attachment);
+            }
+            return this;
+        }
+
+        /** Remplace la liste des pièces jointes. */
+        public Builder attachments(List<Attachment> attachments) {
+            this.attachments.clear();
+            if (attachments != null) {
+                for (Attachment a : attachments) {
+                    if (a != null) {
+                        this.attachments.add(a);
+                    }
+                }
+            }
             return this;
         }
 

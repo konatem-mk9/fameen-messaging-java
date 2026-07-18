@@ -94,6 +94,33 @@ if (solde.billing().sendingBlocked()) {
 }
 ```
 
+## Médias (pièces jointes)
+
+WhatsApp et email acceptent des pièces jointes (PDF, images, vidéo, audio). Construisez une `Attachment` (depuis un fichier ou des octets) — le SDK l'encode en base64 ; l'API héberge le fichier et le distribue. **SMS non supporté.** Quand un média est fourni, le message peut être vide.
+
+```java
+import com.fameen.messaging.*;
+import java.nio.file.Path;
+
+// WhatsApp : un seul média par message, message = légende (facultative)
+fameen.whatsapp().send(SendMessageParams.builder()
+        .to("+224620000000")
+        .message("Votre facture")
+        .addAttachment(Attachment.fromFile(Path.of("facture.pdf")))
+        .build());
+
+// Email : plusieurs pièces jointes
+fameen.email().send(SendMessageParams.builder()
+        .to("client@exemple.com")
+        .subject("Vos documents")
+        .message("Bonjour, voir en pièces jointes.")
+        .addAttachment(Attachment.fromFile(Path.of("facture.pdf")))
+        .addAttachment(Attachment.ofBytes(pdfBytes, "cgv.pdf").withType(MediaType.DOCUMENT))
+        .build());
+```
+
+Fabriques `Attachment` : `fromFile(Path)`, `ofBytes(byte[], filename)`, `ofBase64(String, filename)` ; affinez avec `withContentType(...)` / `withType(MediaType.IMAGE|VIDEO|AUDIO|DOCUMENT)`. Max 16 Mo par fichier.
+
 ## Idempotence
 
 Fournissez une clé d'idempotence pour éviter tout doublon : pendant 24 h, un

@@ -1,5 +1,9 @@
 package com.fameen.messaging;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Paramètres d'un envoi par canal dédié
  * ({@code POST /sms/send}, {@code /whatsapp/send}, {@code /email/send}).
@@ -19,6 +23,7 @@ public final class SendMessageParams {
     private final String subject;
     private final String statusCallback;
     private final String idempotencyKey;
+    private final List<Attachment> attachments;
 
     private SendMessageParams(Builder builder) {
         this.to = builder.to;
@@ -26,6 +31,7 @@ public final class SendMessageParams {
         this.subject = builder.subject;
         this.statusCallback = builder.statusCallback;
         this.idempotencyKey = builder.idempotencyKey;
+        this.attachments = Collections.unmodifiableList(new ArrayList<>(builder.attachments));
     }
 
     public static Builder builder() {
@@ -64,6 +70,15 @@ public final class SendMessageParams {
         return idempotencyKey;
     }
 
+    /**
+     * Pièces jointes (PDF, images, vidéo, audio). WhatsApp : un seul média par
+     * message ; Email : plusieurs autorisées. Vide si aucun média. Quand un
+     * média est présent, {@code message} peut être vide (légende facultative).
+     */
+    public List<Attachment> attachments() {
+        return attachments;
+    }
+
     /** Constructeur fluide de {@link SendMessageParams}. */
     public static final class Builder {
 
@@ -72,6 +87,7 @@ public final class SendMessageParams {
         private String subject;
         private String statusCallback;
         private String idempotencyKey;
+        private final List<Attachment> attachments = new ArrayList<>();
 
         private Builder() {
         }
@@ -103,6 +119,27 @@ public final class SendMessageParams {
         /** Clé d'idempotence (fenêtre de 24 h côté serveur). */
         public Builder idempotencyKey(String idempotencyKey) {
             this.idempotencyKey = idempotencyKey;
+            return this;
+        }
+
+        /** Ajoute une pièce jointe (voir {@link Attachment#fromFile(java.nio.file.Path)}). */
+        public Builder addAttachment(Attachment attachment) {
+            if (attachment != null) {
+                this.attachments.add(attachment);
+            }
+            return this;
+        }
+
+        /** Remplace la liste des pièces jointes. */
+        public Builder attachments(List<Attachment> attachments) {
+            this.attachments.clear();
+            if (attachments != null) {
+                for (Attachment a : attachments) {
+                    if (a != null) {
+                        this.attachments.add(a);
+                    }
+                }
+            }
             return this;
         }
 

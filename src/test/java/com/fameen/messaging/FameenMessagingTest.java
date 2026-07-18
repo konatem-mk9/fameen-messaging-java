@@ -5,8 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -120,7 +123,7 @@ class FameenMessagingTest {
         assertEquals("https://business.fameengroupe.com/api/v1/sms/send", req.uri().toString());
         assertEquals("Bearer fam_test_key", req.headers().get("Authorization"));
         assertEquals("application/json", req.headers().get("Accept"));
-        assertEquals("fameen-messaging-java/0.1.0", req.headers().get("User-Agent"));
+        assertEquals("fameen-messaging-java/0.2.0", req.headers().get("User-Agent"));
         assertEquals("idem-42", req.headers().get("Idempotency-Key"));
         assertEquals("application/json", req.headers().get("Content-Type"));
 
@@ -150,6 +153,91 @@ class FameenMessagingTest {
         assertEquals("Bienvenue", body.get("subject").asText());
         assertEquals("https://exemple.com/webhooks/fameen", body.get("statusCallback").asText());
         assertNull(req.headers().get("Idempotency-Key"));
+    }
+
+    // ------------------------------------------------------------------
+    // Médias (WhatsApp & email)
+    // ------------------------------------------------------------------
+
+    @Test
+    void whatsappAttachmentIsBase64EncodedInBody() throws IOException {
+        FakeHttpTransport transport = new FakeHttpTransport().enqueueJson(200, MESSAGE_ENVELOPE);
+        FameenMessaging client = testClient(transport, new ArrayList<>()).build();
+
+        client.whatsapp().send(SendMessageParams.builder()
+                .to("+224620000000")
+                .message("Votre facture")
+                .addAttachment(Attachment.ofBytes("%PDF-1.4 hello".getBytes(), "facture.pdf")
+                        .withContentType("application/pdf").withType(MediaType.DOCUMENT))
+                .build());
+
+        JsonNode body = JSON.readTree(transport.requests().get(0).body());
+        JsonNode att = body.get("attachments").get(0);
+        assertEquals(Base64.getEncoder().encodeToString("%PDF-1.4 hello".getBytes()), att.get("content").asText());
+        assertEquals("facture.pdf", att.get("filename").asText());
+        assertEquals("application/pdf", att.get("contentType").asText());
+        assertEquals("document", att.get("type").asText());
+    }
+
+    @Test
+    void emailSupportsMultipleAttachments() throws IOException {
+        FakeHttpTransport transport = new FakeHttpTransport().enqueueJson(200, MESSAGE_ENVELOPE);
+        FameenMessaging client = testClient(transport, new ArrayList<>()).build();
+
+        client.email().send(SendMessageParams.builder()
+                .to("client@exemple.com")
+                .subject("Documents")
+                .message("Voir pièces jointes")
+                .addAttachment(Attachment.ofBytes("un".getBytes(), "a.pdf"))
+                .addAttachment(Attachment.ofBase64("ZGV1eA==", "b.txt"))
+                .build());
+
+        JsonNode atts = JSON.readTree(transport.requests().get(0).body()).get("attachments");
+        assertEquals(2, atts.size());
+        assertEquals(Base64.getEncoder().encodeToString("un".getBytes()), atts.get(0).get("content").asText());
+        assertEquals("ZGV1eA==", atts.get(1).get("content").asText());
+        assertEquals("b.txt", atts.get(1).get("filename").asText());
+    }
+
+    @Test
+    void emptyMessageAllowedWhenMediaPresent() throws IOException {
+        FakeHttpTransport transport = new FakeHttpTransport().enqueueJson(200, MESSAGE_ENVELOPE);
+        FameenMessaging client = testClient(transport, new ArrayList<>()).build();
+
+        client.whatsapp().send(SendMessageParams.builder()
+                .to("+224620000000")
+                .addAttachment(Attachment.ofBytes("img".getBytes(), "photo.png").withType(MediaType.IMAGE))
+                .build());
+
+        JsonNode body = JSON.readTree(transport.requests().get(0).body());
+        assertEquals("", body.get("message").asText());
+        assertTrue(body.has("attachments"));
+    }
+
+    @Test
+    void mediaRejectedOnSmsChannel() {
+        FakeHttpTransport transport = new FakeHttpTransport();
+        FameenMessaging client = testClient(transport, new ArrayList<>()).build();
+
+        assertThrows(IllegalArgumentException.class, () -> client.sms().send(SendMessageParams.builder()
+                .to("+224620000000")
+                .message("x")
+                .addAttachment(Attachment.ofBytes("img".getBytes(), "photo.png"))
+                .build()));
+        assertTrue(transport.requests().isEmpty());
+    }
+
+    @Test
+    void attachmentFromFileReadsAndEncodes() throws IOException {
+        Path file = Files.createTempFile("fameen", ".txt");
+        Files.write(file, "contenu de test".getBytes());
+        try {
+            Attachment att = Attachment.fromFile(file);
+            assertEquals(Base64.getEncoder().encodeToString("contenu de test".getBytes()), att.contentBase64());
+            assertEquals(file.getFileName().toString(), att.filename());
+        } finally {
+            Files.deleteIfExists(file);
+        }
     }
 
     // ------------------------------------------------------------------

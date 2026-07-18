@@ -37,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class FameenMessaging {
 
     /** Version du SDK (reprise dans l'en-tête {@code User-Agent}). */
-    public static final String VERSION = "0.1.0";
+    public static final String VERSION = "0.2.0";
 
     /** URL de base par défaut de l'API. */
     public static final String DEFAULT_BASE_URL = "https://business.fameengroupe.com/api/v1";
@@ -139,17 +139,29 @@ public final class FameenMessaging {
      */
     MessageResource sendOnChannel(String path, Channel channel, SendMessageParams params) {
         Objects.requireNonNull(params, "params");
-        Validation.assertSendable(params.to(), params.message(), channel);
+        Validation.assertSendable(params.to(), params.message(), channel, !params.attachments().isEmpty());
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("to", params.to());
-        body.put("message", params.message());
+        body.put("message", params.message() != null ? params.message() : "");
         if (params.subject() != null && !params.subject().isBlank()) {
             body.put("subject", params.subject());
         }
         if (params.statusCallback() != null && !params.statusCallback().isBlank()) {
             body.put("statusCallback", params.statusCallback());
         }
+        putAttachments(body, params.attachments());
         return request("POST", path, null, body, params.idempotencyKey(), MessageResource.class);
+    }
+
+    /** Ajoute les pièces jointes sérialisées au corps, si présentes. */
+    static void putAttachments(Map<String, Object> body, java.util.List<Attachment> attachments) {
+        if (attachments != null && !attachments.isEmpty()) {
+            java.util.List<Map<String, Object>> serialized = new java.util.ArrayList<>();
+            for (Attachment a : attachments) {
+                serialized.add(a.toMap());
+            }
+            body.put("attachments", serialized);
+        }
     }
 
     /**
