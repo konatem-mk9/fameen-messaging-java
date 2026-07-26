@@ -1,10 +1,11 @@
 # Fameen Messaging — SDK Java officiel
 
-SDK Java de l'API **Fameen Messaging** : envoi de SMS, WhatsApp et emails, suivi
-des statuts, solde de crédits et vérification des webhooks.
+SDK Java de l'API **Fameen Messaging** : envoi de SMS, WhatsApp et emails, codes
+de vérification (OTP), suivi des statuts, solde de crédits et vérification des
+webhooks.
 
 - Java **17+**, une seule dépendance runtime : `jackson-databind`.
-- Coordonnées Maven : `io.github.konatem-mk9:fameen-messaging:0.1.0` — licence MIT.
+- Coordonnées Maven : `io.github.konatem-mk9:fameen-messaging:1.0.1` — licence MIT.
 - Package : `com.fameen.messaging` (le groupId Central est le namespace GitHub vérifié ; le package Java reste celui de la marque).
 
 ## Installation
@@ -15,14 +16,14 @@ des statuts, solde de crédits et vérification des webhooks.
 <dependency>
   <groupId>io.github.konatem-mk9</groupId>
   <artifactId>fameen-messaging</artifactId>
-  <version>0.1.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```groovy
-implementation 'io.github.konatem-mk9:fameen-messaging:0.1.0'
+implementation 'io.github.konatem-mk9:fameen-messaging:1.0.1'
 ```
 
 ## Démarrage rapide

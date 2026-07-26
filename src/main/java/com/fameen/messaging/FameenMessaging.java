@@ -37,7 +37,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class FameenMessaging {
 
     /** Version du SDK (reprise dans l'en-tête {@code User-Agent}). */
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.0.1";
 
     /** URL de base par défaut de l'API. */
     public static final String DEFAULT_BASE_URL = "https://fameenbusiness.com/api/v1";
