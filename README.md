@@ -94,6 +94,59 @@ if (solde.billing().sendingBlocked()) {
 }
 ```
 
+## Codes de vérification (OTP)
+
+Authentifiez un utilisateur par code à usage unique sur **SMS, WhatsApp ou email**.
+Le code est généré, stocké haché et vérifié **côté serveur** : il ne transite jamais
+par votre application et n'apparaît dans aucune réponse. Ni génération, ni stockage,
+ni expiration à gérer.
+
+```java
+// 1. Envoyer le code (canal déduit du destinataire si absent)
+VerificationResource v = fameen.otp().send(
+        SendOtpParams.builder()
+                .to("+224620000000")
+                .channel(Channel.SMS)
+                .build());
+// v.verificationId(), v.status() == "pending", v.expiresAt(), v.attemptsRemaining()
+
+// 2. Contrôler le code saisi par l'utilisateur
+VerificationResource r = fameen.otp().verify(
+        VerifyOtpParams.builder()
+                .verificationId(v.verificationId())
+                .code("483920")
+                .build());
+
+if (r.isApproved()) {
+    // utilisateur authentifié
+} else {
+    // r.reason() : "invalid_code" | "expired" | "max_attempts"
+    System.out.printf("Échec (%s), %d tentative(s) restante(s)%n", r.reason(), r.attemptsRemaining());
+}
+```
+
+Un code erroné **ne lève pas d'exception** : la réponse porte `status = "rejected"`
+et `reason`. Seules les erreurs de transport ou d'authentification lèvent.
+
+Si vous ne conservez pas l'identifiant, vérifiez par destinataire — la vérification
+en cours la plus récente est utilisée :
+
+```java
+fameen.otp().verify(VerifyOtpParams.builder().to("+224620000000").code("483920").build());
+```
+
+Options d'envoi : `codeLength` (4–8), `ttlSeconds` (60–3600), `maxAttempts` (1–10),
+`template` (doit contenir `{{code}}` ; marqueurs `{{code}}`, `{{minutes}}`,
+`{{seconds}}`, `{{company}}`), `subject` (email), `statusCallback` et
+`idempotencyKey`. Sans ces paramètres, les réglages du compte s'appliquent.
+
+À savoir :
+
+- L'envoi exige **le scope du canal** utilisé et consomme un crédit de ce canal.
+- Un code validé est **à usage unique** ; le revérifier renvoie `rejected`.
+- Demander un nouveau code pour le même destinataire **annule le précédent**.
+- `fameen.otp().get(verificationId)` retourne l'état courant, jamais le code.
+
 ## Médias (pièces jointes)
 
 WhatsApp et email acceptent des pièces jointes (PDF, images, vidéo, audio). Construisez une `Attachment` (depuis un fichier ou des octets) — le SDK l'encode en base64 ; l'API héberge le fichier et le distribue. **SMS non supporté.** Quand un média est fourni, le message peut être vide.
@@ -229,7 +282,7 @@ vous voulez seulement le booléen (comparaison en temps constant via
 fameen.api-key=${FAMEEN_API_KEY}
 fameen.webhook-secret=${FAMEEN_WEBHOOK_SECRET}
 # Optionnel :
-# fameen.base-url=https://business.fameengroupe.com/api/v1
+# fameen.base-url=https://fameenbusiness.com/api/v1
 ```
 
 Configuration :
@@ -246,7 +299,7 @@ public class FameenConfig {
     @Bean
     public FameenMessaging fameenMessaging(
             @Value("${fameen.api-key}") String apiKey,
-            @Value("${fameen.base-url:https://business.fameengroupe.com/api/v1}") String baseUrl) {
+            @Value("${fameen.base-url:https://fameenbusiness.com/api/v1}") String baseUrl) {
         return FameenMessaging.builder()
                 .apiKey(apiKey)
                 .baseUrl(baseUrl)
@@ -317,7 +370,7 @@ public class FameenWebhookController {
 | Option du builder | Défaut | Rôle |
 |---|---|---|
 | `apiKey(String)` | — (requis) | Clé API `fam_…` du compte |
-| `baseUrl(String)` | `https://business.fameengroupe.com/api/v1` | Les `/` finaux sont retirés |
+| `baseUrl(String)` | `https://fameenbusiness.com/api/v1` | Les `/` finaux sont retirés |
 | `timeout(Duration)` | 30 s | Timeout **par tentative** |
 | `maxRetries(int)` | 2 | Réessais automatiques (0 pour désactiver) |
 | `retryBase(Duration)` | 500 ms | Base du backoff exponentiel |

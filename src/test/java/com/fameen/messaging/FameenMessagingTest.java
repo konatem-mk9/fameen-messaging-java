@@ -120,10 +120,10 @@ class FameenMessagingTest {
 
         FakeHttpTransport.RecordedRequest req = transport.requests().get(0);
         assertEquals("POST", req.method());
-        assertEquals("https://business.fameengroupe.com/api/v1/sms/send", req.uri().toString());
+        assertEquals("https://fameenbusiness.com/api/v1/sms/send", req.uri().toString());
         assertEquals("Bearer fam_test_key", req.headers().get("Authorization"));
         assertEquals("application/json", req.headers().get("Accept"));
-        assertEquals("fameen-messaging-java/0.2.0", req.headers().get("User-Agent"));
+        assertEquals("fameen-messaging-java/1.0.0", req.headers().get("User-Agent"));
         assertEquals("idem-42", req.headers().get("Idempotency-Key"));
         assertEquals("application/json", req.headers().get("Content-Type"));
 
@@ -456,7 +456,7 @@ class FameenMessagingTest {
 
         assertEquals(3, transport.requests().size()); // 1 tentative + 2 réessais
         assertEquals(2, sleeps.size());
-        assertTrue(err.getMessage().contains("business.fameengroupe.com"));
+        assertTrue(err.getMessage().contains("fameenbusiness.com"));
         assertTrue(err.getCause() instanceof IOException);
     }
 

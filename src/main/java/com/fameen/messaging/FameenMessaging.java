@@ -37,10 +37,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class FameenMessaging {
 
     /** Version du SDK (reprise dans l'en-tête {@code User-Agent}). */
-    public static final String VERSION = "0.2.0";
+    public static final String VERSION = "1.0.0";
 
     /** URL de base par défaut de l'API. */
-    public static final String DEFAULT_BASE_URL = "https://business.fameengroupe.com/api/v1";
+    public static final String DEFAULT_BASE_URL = "https://fameenbusiness.com/api/v1";
 
     private final String apiKey;
     private final String baseUrl;
@@ -56,6 +56,7 @@ public final class FameenMessaging {
     private final EmailResource email;
     private final MessagesResource messages;
     private final WalletResource wallet;
+    private final OtpResource otp;
 
     /** Compteurs {@code X-RateLimit-*} de la dernière réponse qui les fournissait. */
     private volatile RateLimitInfo lastRateLimit;
@@ -88,6 +89,7 @@ public final class FameenMessaging {
         this.email = new EmailResource(this);
         this.messages = new MessagesResource(this);
         this.wallet = new WalletResource(this);
+        this.otp = new OtpResource(this);
     }
 
     /** Point d'entrée : {@code FameenMessaging.builder().apiKey("fam_…").build()}. */
@@ -118,6 +120,11 @@ public final class FameenMessaging {
     /** Soldes de crédits et mode de facturation. */
     public WalletResource wallet() {
         return wallet;
+    }
+
+    /** Codes de verification a usage unique : {@code fameen.otp().send(...)}. */
+    public OtpResource otp() {
+        return otp;
     }
 
     /**

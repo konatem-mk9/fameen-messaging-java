@@ -9,12 +9,12 @@
        Le package Java reste com.fameen.messaging — Central ne contraint que le groupId. -->
   <groupId>io.github.konatem-mk9</groupId>
   <artifactId>fameen-messaging</artifactId>
-  <version>0.2.0</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>Fameen Messaging SDK</name>
   <description>SDK Java officiel de l'API Fameen Messaging (SMS, WhatsApp, Email).</description>
-  <url>https://business.fameengroupe.com</url>
+  <url>https://fameenbusiness.com</url>
 
   <licenses>
     <license>
@@ -26,7 +26,7 @@
 
   <organization>
     <name>Fameen Groupe</name>
-    <url>https://business.fameengroupe.com</url>
+    <url>https://fameenbusiness.com</url>
   </organization>
 
   <developers>
@@ -35,7 +35,7 @@
       <name>Moussa KONATE</name>
       <email>konatem.mk9@gmail.com</email>
       <organization>Fameen Groupe</organization>
-      <organizationUrl>https://business.fameengroupe.com</organizationUrl>
+      <organizationUrl>https://fameenbusiness.com</organizationUrl>
     </developer>
   </developers>
 
