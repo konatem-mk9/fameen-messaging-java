@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 $Jdk        = "C:\Program Files\Java\jdk-17\bin"
 $GroupPath  = "io\github\konatem-mk9"
 $ArtifactId = "fameen-messaging"
-$Version    = "1.0.1"
+$Version    = "1.0.2"
 $GpgKey     = "46F05D46568796296220FCB386D40718F9BDD386"
 
 $Root = $PSScriptRoot

@@ -5,7 +5,7 @@ de vérification (OTP), suivi des statuts, solde de crédits et vérification de
 webhooks.
 
 - Java **17+**, une seule dépendance runtime : `jackson-databind`.
-- Coordonnées Maven : `io.github.konatem-mk9:fameen-messaging:1.0.1` — licence MIT.
+- Coordonnées Maven : `io.github.konatem-mk9:fameen-messaging:1.0.2` — licence MIT.
 - Package : `com.fameen.messaging` (le groupId Central est le namespace GitHub vérifié ; le package Java reste celui de la marque).
 
 ## Installation
@@ -16,14 +16,14 @@ webhooks.
 <dependency>
   <groupId>io.github.konatem-mk9</groupId>
   <artifactId>fameen-messaging</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```groovy
-implementation 'io.github.konatem-mk9:fameen-messaging:1.0.1'
+implementation 'io.github.konatem-mk9:fameen-messaging:1.0.2'
 ```
 
 ## Démarrage rapide
@@ -188,6 +188,27 @@ fameen.sms().send(SendMessageParams.builder()
     .idempotencyKey("commande-881-notif-prete")
     .build());
 ```
+
+## Authenticité du paquet
+
+Tous les artefacts publiés sur Maven Central sont **signés GPG** — le `.jar`, les
+sources, le javadoc et le `.pom` ont chacun leur fichier `.asc`. La clé publique est
+diffusée sur les serveurs de clés :
+
+```
+46F0 5D46 5687 9629 6220  FCB3 86D4 0718 F9BD D386
+Moussa KONATE (Fameen SDK signing) <konatem.mk9@gmail.com>
+```
+
+Pour vérifier une archive téléchargée :
+
+```bash
+gpg --keyserver keyserver.ubuntu.com --recv-keys 86D40718F9BDD386
+gpg --verify fameen-messaging-1.0.2.jar.asc fameen-messaging-1.0.2.jar
+```
+
+La sortie doit indiquer `Good signature` avec l'identité ci-dessus. Maven et Gradle
+vérifient ces signatures automatiquement lorsque la vérification de somme est activée.
 
 ## Erreurs
 
