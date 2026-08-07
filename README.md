@@ -221,9 +221,11 @@ Toutes les exceptions du SDK héritent de `FameenException` (non contrôlée).
 | `WebhookVerificationException` | Signature ou corps de webhook invalide |
 | `IllegalArgumentException` | Validation locale (clé API absente, `to`/`message` vides, email sur canal SMS…) |
 
-Codes stables de `FameenApiException.code()` : `bad_request`, `unauthorized`,
-`insufficient_credits`, `channel_not_allowed`, `not_found`, `rate_limited`,
-`internal_error` (repli : `unknown_error`).
+Codes stables de `FameenApiException.code()` : `invalid_request`,
+`unauthorized`, `insufficient_credits`, `subscription_expired`,
+`channel_not_allowed`, `not_found`, `rate_limited`, `internal_error`.
+`unknown_error` n'est jamais émis par l'API — c'est le repli du SDK quand la
+réponse ne porte pas de code exploitable.
 
 ```java
 try {
@@ -256,7 +258,8 @@ Le client réessaie automatiquement (2 fois par défaut) avec backoff exponentie
 
 ### Limite de débit
 
-60 requêtes/min/clé. Les compteurs `X-RateLimit-*` de la dernière réponse sont
+60 requêtes/min **par compte** — toutes les clés d'un compte partagent ce
+quota. Les compteurs `X-RateLimit-*` de la dernière réponse sont
 exposés :
 
 ```java
