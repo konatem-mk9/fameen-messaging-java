@@ -314,9 +314,12 @@ public final class FameenMessaging {
         return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
+    /** Repli quand la réponse ne porte pas de {@code error.code} exploitable. */
     private static String codeFromStatus(int status) {
         return switch (status) {
-            case 400 -> "bad_request";
+            // 400 couvre aussi subscription_expired ; sans corps lisible on ne
+            // peut pas les distinguer, donc on retient le cas général.
+            case 400 -> "invalid_request";
             case 401 -> "unauthorized";
             case 402 -> "insufficient_credits";
             case 403 -> "channel_not_allowed";
