@@ -9,7 +9,7 @@
        Le package Java reste com.fameen.messaging — Central ne contraint que le groupId. -->
   <groupId>io.github.konatem-mk9</groupId>
   <artifactId>fameen-messaging</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>jar</packaging>
 
   <name>Fameen Messaging SDK</name>

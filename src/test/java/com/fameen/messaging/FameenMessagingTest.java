@@ -123,7 +123,7 @@ class FameenMessagingTest {
         assertEquals("https://fameenbusiness.com/api/v1/sms/send", req.uri().toString());
         assertEquals("Bearer fam_test_key", req.headers().get("Authorization"));
         assertEquals("application/json", req.headers().get("Accept"));
-        assertEquals("fameen-messaging-java/1.0.2", req.headers().get("User-Agent"));
+        assertEquals("fameen-messaging-java/1.0.3", req.headers().get("User-Agent"));
         assertEquals("idem-42", req.headers().get("Idempotency-Key"));
         assertEquals("application/json", req.headers().get("Content-Type"));
 
