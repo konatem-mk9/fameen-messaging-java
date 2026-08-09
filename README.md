@@ -5,7 +5,7 @@ de vérification (OTP), suivi des statuts, solde de crédits et vérification de
 webhooks.
 
 - Java **17+**, une seule dépendance runtime : `jackson-databind`.
-- Coordonnées Maven : `io.github.konatem-mk9:fameen-messaging:1.0.2` — licence MIT.
+- Coordonnées Maven : `io.github.konatem-mk9:fameen-messaging:1.0.3` — licence MIT.
 - Package : `com.fameen.messaging` (le groupId Central est le namespace GitHub vérifié ; le package Java reste celui de la marque).
 
 ## Installation
@@ -16,14 +16,14 @@ webhooks.
 <dependency>
   <groupId>io.github.konatem-mk9</groupId>
   <artifactId>fameen-messaging</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```groovy
-implementation 'io.github.konatem-mk9:fameen-messaging:1.0.2'
+implementation 'io.github.konatem-mk9:fameen-messaging:1.0.3'
 ```
 
 ## Démarrage rapide
@@ -94,6 +94,29 @@ if (solde.billing().sendingBlocked()) {
     System.out.println("Compte bloqué — contactez Fameen.");
 }
 ```
+
+
+## WhatsApp — à faire une fois avant le premier envoi
+
+`whatsapp.send(...)` échoue tant que **votre** numéro WhatsApp Business n'est pas
+connecté : il n'existe aucun numéro partagé de repli, Meta imposant que chaque
+entreprise émette depuis le sien.
+
+1. Tableau de bord → **Paramètres → WhatsApp → Connecter WhatsApp**. Une fenêtre
+   Meta (*Embedded Signup*) vous fait choisir ou créer votre compte WhatsApp
+   Business et votre numéro ; la connexion se finalise au retour.
+2. Prérequis Meta : un compte Meta Business et un numéro **non déjà utilisé sur
+   WhatsApp** (ni l'app classique, ni WhatsApp Business), joignable pour recevoir
+   un code.
+
+**La fenêtre de 24 h — la règle qui surprend le plus.** Meta n'autorise le
+message libre que dans les 24 h suivant le dernier message **reçu** de ce
+contact. En dehors (ou pour un premier contact), seul un **gabarit approuvé**
+passe ; un message libre est refusé par Meta et la ressource finit en `failed`.
+Faites approuver vos gabarits depuis Paramètres → WhatsApp → Gabarits avant de
+planifier des envois sortants.
+
+Détail complet : <https://fameenbusiness.com/communication/api>
 
 ## Codes de vérification (OTP)
 
@@ -204,7 +227,7 @@ Pour vérifier une archive téléchargée :
 
 ```bash
 gpg --keyserver keyserver.ubuntu.com --recv-keys 86D40718F9BDD386
-gpg --verify fameen-messaging-1.0.2.jar.asc fameen-messaging-1.0.2.jar
+gpg --verify fameen-messaging-1.0.3.jar.asc fameen-messaging-1.0.3.jar
 ```
 
 La sortie doit indiquer `Good signature` avec l'identité ci-dessus. Maven et Gradle
