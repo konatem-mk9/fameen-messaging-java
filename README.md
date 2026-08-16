@@ -166,7 +166,7 @@ Options d'envoi : `codeLength` (4–8), `ttlSeconds` (60–3600), `maxAttempts` 
 
 À savoir :
 
-- L'envoi exige **le scope du canal** utilisé et consomme un crédit de ce canal.
+- L'envoi consomme un crédit du canal utilisé. Toute clé créée depuis le tableau de bord couvre les trois canaux ; `channel_not_allowed` (403) ne concerne que d'anciennes clés restreintes.
 - Un code validé est **à usage unique** ; le revérifier renvoie `rejected`.
 - Demander un nouveau code pour le même destinataire **annule le précédent**.
 - `fameen.otp().get(verificationId)` retourne l'état courant, jamais le code.
