@@ -8,7 +8,7 @@ $Jdk        = "C:\Program Files\Java\jdk-17\bin"
 $GroupPath  = "io\github\konatem-mk9"
 $ArtifactId = "fameen-messaging"
 $Version    = "1.0.4"
-$GpgKey     = "46F05D46568796296220FCB386D40718F9BDD386"
+$GpgKey     = "11857A0EF85214D393379BD3C4C23CFBB3B9ADC4"
 
 $Root = $PSScriptRoot
 $Cp   = "$Root\lib\jackson-core-2.17.2.jar;$Root\lib\jackson-databind-2.17.2.jar;$Root\lib\jackson-annotations-2.17.2.jar"
