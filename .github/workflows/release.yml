@@ -1,8 +1,8 @@
 # A chaque tag `vX.Y.Z` : tests JUnit + jars (binaire, sources, javadoc) via Maven,
-# puis Release GitHub avec les jars attaches.
-# NB : la publication Maven Central reste faite via package-central.ps1 (bundle signe GPG) ;
-# elle pourra etre automatisee ici plus tard avec un token central.sonatype.com + la cle GPG
-# en secrets GitHub (central-publishing-maven-plugin).
+# Release GitHub avec les jars attaches, puis publication Maven Central
+# (profil `central` du pom : signature GPG + central-publishing-maven-plugin).
+# Le job Central ne tourne que si les secrets sont presents ; sans eux, la
+# release GitHub est faite et le bundle manuel (package-central.ps1) reste possible.
 name: Tests & release GitHub
 
 on:
@@ -34,3 +34,39 @@ jobs:
         with:
           files: target/fameen-messaging-*.jar
           generate_release_notes: true
+
+  publish-central:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    environment: maven-central
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Secrets presents ?
+        id: secrets
+        env:
+          U: ${{ secrets.CENTRAL_USERNAME }}
+          K: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          if [ -n "$U" ] && [ -n "$K" ]; then echo "ok=true" >> "$GITHUB_OUTPUT"; else echo "ok=false" >> "$GITHUB_OUTPUT"; echo "::warning::Secrets Maven Central absents — publication ignoree (bundle manuel : package-central.ps1)"; fi
+
+      - uses: actions/setup-java@v4
+        if: steps.secrets.outputs.ok == 'true'
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          server-id: central
+          server-username: CENTRAL_USERNAME
+          server-password: CENTRAL_PASSWORD
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+      - name: Publier sur Maven Central
+        if: steps.secrets.outputs.ok == 'true'
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: mvn -B -Pcentral -DskipTests deploy

@@ -118,4 +118,51 @@
       </plugin>
     </plugins>
   </build>
+
+  <!-- Publication Maven Central automatisée (workflow release.yml, tags vX.Y.Z).
+       Activé uniquement avec -Pcentral : la compilation/tests locaux et la CI de
+       branche n'ont pas besoin de GPG ni des identifiants Sonatype.
+       Secrets attendus (GitHub → Settings → Secrets) : CENTRAL_USERNAME,
+       CENTRAL_PASSWORD (jeton utilisateur central.sonatype.com), GPG_PRIVATE_KEY
+       (clé privée ASCII-armored), GPG_PASSPHRASE. -->
+  <profiles>
+    <profile>
+      <id>central</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.4</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals><goal>sign</goal></goals>
+                <configuration>
+                  <!-- Passphrase lue depuis l'environnement (MAVEN_GPG_PASSPHRASE) ; mode batch pour la CI. -->
+                  <gpgArguments>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.7.0</version>
+            <extensions>true</extensions>
+            <configuration>
+              <!-- serverId = <server> du settings.xml généré par setup-java (server-id: central). -->
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+              <waitUntil>published</waitUntil>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
