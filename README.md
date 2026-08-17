@@ -5,7 +5,7 @@ de vérification (OTP), suivi des statuts, solde de crédits et vérification de
 webhooks.
 
 - Java **17+**, une seule dépendance runtime : `jackson-databind`.
-- Coordonnées Maven : `io.github.konatem-mk9:fameen-messaging:1.0.3` — licence MIT.
+- Coordonnées Maven : `io.github.konatem-mk9:fameen-messaging:1.0.4` — licence MIT.
 - Package : `com.fameen.messaging` (le groupId Central est le namespace GitHub vérifié ; le package Java reste celui de la marque).
 
 ## Installation
@@ -16,14 +16,14 @@ webhooks.
 <dependency>
   <groupId>io.github.konatem-mk9</groupId>
   <artifactId>fameen-messaging</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
 </dependency>
 ```
 
 **Gradle**
 
 ```groovy
-implementation 'io.github.konatem-mk9:fameen-messaging:1.0.3'
+implementation 'io.github.konatem-mk9:fameen-messaging:1.0.4'
 ```
 
 ## Démarrage rapide
@@ -227,7 +227,7 @@ Pour vérifier une archive téléchargée :
 
 ```bash
 gpg --keyserver keyserver.ubuntu.com --recv-keys 86D40718F9BDD386
-gpg --verify fameen-messaging-1.0.3.jar.asc fameen-messaging-1.0.3.jar
+gpg --verify fameen-messaging-1.0.4.jar.asc fameen-messaging-1.0.4.jar
 ```
 
 La sortie doit indiquer `Good signature` avec l'identité ci-dessus. Maven et Gradle
